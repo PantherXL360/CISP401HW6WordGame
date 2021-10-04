@@ -1,0 +1,77 @@
+package com.company.controllers;
+
+import com.company.models.WordList;
+import com.company.views.CmdLineView;
+
+public class Main {
+
+    public static String[] letters;
+    public static int numLetters=0;
+    public static int numGuesses;
+    public static String theGuess;
+    public static String[] hints;
+    public static int runs=0;
+    public static  CmdLineView view;
+
+    public static void main(String[] args) {
+
+        numGuesses = 6;
+
+        GetWord getWord = new GetWord();
+        String theWord = getWord.getTheWord();
+
+        WordList word = new WordList(theWord);
+
+        //WordList word = new WordList(getWord.getTheWord());
+
+        letters = calculateLetters(word.getTheWord());
+
+        view = new CmdLineView(letters);
+        view.startGame();
+        view.cheat(word.getTheWord());
+        hints = new String[letters.length];
+
+        while((numLetters > 0) && (numGuesses > 0)){
+            hints = guess();
+            view.displayHints(hints);
+            //display
+            //System.out.println(hints);
+        }
+    }
+
+    private static String[] calculateLetters(String theWord){
+        String[] letters = theWord.split("");
+        numLetters = letters.length;
+        return letters;
+    }
+
+    private static String[] guess(){
+
+        theGuess = view.makeAGuess();
+        String msg = "Incorrect Guess";
+        int correctGuess=0;
+
+        for(int i = 0; i < letters.length; i++){
+            if(letters[i].equals(theGuess)){
+                hints[i] = theGuess;
+                correctGuess=1;
+                numLetters--;
+                System.out.println(numLetters);
+            }
+            else if (runs == 1){
+                if (hints[i].equals("_")){
+                    hints[i] = "_";
+                }
+            }
+            else {
+                hints[i] = "_";
+            }
+        }
+        if (correctGuess < 1){
+            System.out.println(msg);
+            numGuesses--;
+        }
+        runs=1;
+        return hints;
+    }
+}
